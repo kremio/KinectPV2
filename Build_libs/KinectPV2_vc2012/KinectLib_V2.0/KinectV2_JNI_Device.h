@@ -291,6 +291,9 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnablePointCloud
 		(JNIEnv *, jobject, jboolean);
 
+	JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnableCameraSpaceTable
+	(JNIEnv *, jobject, jboolean);
+
 
 	JNIEXPORT jintArray JNICALL Java_KinectPV2_Device_jniGetPointCloudDepthImage
 		(JNIEnv *, jobject);
@@ -303,6 +306,14 @@ extern "C" {
 	*/
 	JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetPointCloudDeptMap
 		(JNIEnv *, jobject);
+
+	/*
+	* Class:     KinectPV2_Device
+	* Method:    jniGetPointCloudDeptMap
+	* Signature: ()[F
+	*/
+	JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetDepthToCameraSpaceTable
+	(JNIEnv *, jobject);
 
 	/*
 	* Class:     KinectPV2_Device
@@ -390,6 +401,8 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnableCoordinateMapperRGBDepth
 		(JNIEnv *, jobject);
 
+	JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetDepthFrameToCameraSpaceTable
+		(JNIEnv *, jobject);
 
 
 #ifdef __cplusplus

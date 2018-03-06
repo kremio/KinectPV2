@@ -79,6 +79,8 @@ namespace KinectPV2{
 	class Device : public DeviceOptions, DeviceActivators
 	{
 	private:
+		//Has the lookup table been read already?
+		bool spaceTableAvailable;
 		//color data
 		uint8_t *	  pixelsData;
 		uint8_t *	  pixelsDataTemp;
@@ -101,6 +103,7 @@ namespace KinectPV2{
 
 
 		float    *	 pointCloudPosData;
+		float    *   depthToCameraSpaceTable;
 		float    *   pointCloudColorData;
 
 		uint32_t *   pointCloudDepthImage;
@@ -251,6 +254,7 @@ namespace KinectPV2{
 		float *							JNI_pointCloudColorData();
 
 		float *							JNI_getSkeletonDepthMapData();
+		float *							JNI_depthToCameraSpaceTable();
 		float *							JNI_getSkeleton3DMapData();
 		float *							JNI_getSkeletonColorMapData();
 

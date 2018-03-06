@@ -8,7 +8,7 @@ namespace KinectPV2{
 			toggleColorFrame(false), toggleDepthFrame(false), toggleInFraredFrame(false), toggleBodyIndexDepthFrame(false), toggleDepthSmooth(false),
 			toggleLongExposureInFraredFrame(false), togglePointCloudFrame(false), togglePointCloudColorFrame(false), toggleFaceDetection(false),
 			toggleRawDepthData(false), toggleBodyIndexFrame(false), toggleSkeleton(false), togglCoodinateMappingColor(false), toggleHDFaceDetection(false),
-			toggleColorChannelsFrame(false),
+			toggleColorChannelsFrame(false), toggleSpaceTable(false),
 			initToggleDepthFrame(false), initToggleColorFrame(false), initToggleInfraredFrame(false), initToggleSkeleton(false), initToggleBodyIndexFrame(false),
 			initToggleFaceDetection(false), initToggleLongExposureInfraredFrame(false), initToggleHDFaceDetection(false),
 			initToggleCoordinateRGBDepth(false){}
@@ -24,6 +24,7 @@ namespace KinectPV2{
 			toggleDepthSmooth = false;
 			toggleLongExposureInFraredFrame = false;
 			togglePointCloudFrame = false;
+			toggleSpaceTable = false;
 			togglePointCloudColorFrame = false;
 			toggleFaceDetection = false;
 			toggleRawDepthData = false;
@@ -110,7 +111,7 @@ namespace KinectPV2{
 			toggleLongExposureInFraredFrame = toggle;
 		}
 
-
+		void enableCameraSpaceTable(bool toggle = true) { toggleSpaceTable = toggle; }
 
 		void			enablePointCloud(bool toggle = true){ togglePointCloudFrame = toggle; }
 		void			enablePointCloudColor(bool toggle = true){
@@ -153,6 +154,7 @@ namespace KinectPV2{
 		inline bool		isEnableBodyIndex(){ return toggleBodyIndexFrame; }
 
 		inline bool		isEnablePointCloud(){ return togglePointCloudFrame; }
+		inline bool		isCameraSpaceTableEnabled() { return toggleSpaceTable; }
 		inline bool		isEnablePointCloudColor(){ return togglePointCloudColorFrame; }
 
 		inline bool		isEnableRawDepthData(){ return toggleRawDepthData; }
@@ -210,6 +212,8 @@ namespace KinectPV2{
 		bool		toggleSkeleton3DMap;
 
 		bool		togglCoodinateMappingColor;
+
+		bool		toggleSpaceTable;
 
 
 		//STARTERS FUNCTIONS

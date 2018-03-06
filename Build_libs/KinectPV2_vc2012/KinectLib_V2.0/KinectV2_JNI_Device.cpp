@@ -619,6 +619,15 @@ JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnablePointCloud
 	env->DeleteLocalRef(cls);
 }
 
+JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnableCameraSpaceTable
+(JNIEnv * env, jobject obj, jboolean toggle) {
+	jclass cls = env->GetObjectClass(obj);
+	jfieldID fid = env->GetFieldID(cls, "ptr", "J");
+	KinectPV2::Device * kinect = (KinectPV2::Device *) env->GetLongField(obj, fid);
+	kinect->enableCameraSpaceTable(bool(toggle));
+	env->DeleteLocalRef(cls);
+}
+
 
 JNIEXPORT jintArray JNICALL Java_KinectPV2_Device_jniGetPointCloudDepthImage
 (JNIEnv * env, jobject obj)
@@ -651,6 +660,29 @@ JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetPointCloudDeptMap
 
 	jfloatArray buffer = env->NewFloatArray(frame_size_depth * 3);
 	env->SetFloatArrayRegion(buffer, 0, frame_size_depth * 3, pFloat);
+
+
+	env->DeleteLocalRef(cls);
+
+	return buffer;
+}
+
+/*
+* Class:     KinectPV2_Device
+* Method:    jniGetDepthToCameraSpaceTable
+* Signature: ()[F
+*/
+JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetDepthToCameraSpaceTable
+(JNIEnv * env, jobject obj)
+{
+	jclass cls = env->GetObjectClass(obj);
+	jfieldID fid = env->GetFieldID(cls, "ptr", "J");
+	KinectPV2::Device * kinect = (KinectPV2::Device *) env->GetLongField(obj, fid);
+
+	jfloat * pFloat = (jfloat *)kinect->JNI_depthToCameraSpaceTable();
+
+	jfloatArray buffer = env->NewFloatArray(frame_size_depth * 2);
+	env->SetFloatArrayRegion(buffer, 0, frame_size_depth * 2, pFloat);
 
 
 	env->DeleteLocalRef(cls);
@@ -900,4 +932,21 @@ JNIEXPORT void JNICALL Java_KinectPV2_Device_jniEnableCoordinateMapperRGBDepth
 	kinect->enableCoordinateMapper(true);
 
 	env->DeleteLocalRef(cls);
+}
+
+JNIEXPORT jfloatArray JNICALL Java_KinectPV2_Device_jniGetDepthFrameToCameraSpaceTable
+(JNIEnv * env, jobject obj)
+{
+	jclass cls = env->GetObjectClass(obj);
+	jfieldID fid = env->GetFieldID(cls, "ptr", "J");
+	KinectPV2::Device * kinect = (KinectPV2::Device *) env->GetLongField(obj, fid);
+
+	jfloat * pfloat = (jfloat *)kinect->JNI_depthToCameraSpaceTable();
+
+	jfloatArray buffer = env->NewFloatArray((jsize)frame_size_depth * 2);
+	env->SetFloatArrayRegion(buffer, 0, (jsize)frame_size_depth * 2, (jfloat *)(pfloat));
+
+	env->DeleteLocalRef(cls);
+
+	return buffer;
 }

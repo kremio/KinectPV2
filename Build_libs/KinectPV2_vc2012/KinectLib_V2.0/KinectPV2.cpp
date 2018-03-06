@@ -32,7 +32,7 @@ namespace KinectPV2{
 	Device::Device()
 	{
 		DeviceOptions();
-
+		spaceTableAvailable = false;
 		//COLOR
 		pixelsData = (uint8_t  *)malloc(frame_size_color * 4 * sizeof(uint8_t));
 		pixelsDataTemp = (uint8_t  *)malloc(frame_size_color * 4 * sizeof(uint8_t));
@@ -69,6 +69,7 @@ namespace KinectPV2{
 		faceInfraredData = (float *)malloc(FACESIZE * sizeof(float));
 
 		pointCloudPosData = (float *)malloc(frame_size_depth * 3 * sizeof(float));
+		depthToCameraSpaceTable = (float *)malloc(frame_size_depth * 2 * sizeof(float));
 
 		pointCloudDepthImage = (uint32_t *)malloc(frame_size_depth * sizeof(uint32_t));
 
@@ -174,6 +175,9 @@ namespace KinectPV2{
 			std::cerr << "Error Loading Kinect Mapper" << std::endl;
 			return false;
 		}
+
+		
+		 
 
 		if (SUCCEEDED(hr))
 		{
@@ -563,6 +567,7 @@ namespace KinectPV2{
 		SafeDeletePointer(depthRaw_16_temp);
 		SafeDeletePointer(pointCloudColorData);
 		SafeDeletePointer(pointCloudPosData);
+		SafeDeletePointer(depthToCameraSpaceTable);
 		SafeDeletePointer(colorCameraPos);
 		SafeDeletePointer(depthMaskData);
 		SafeDeletePointer(faceColorData);
@@ -901,8 +906,27 @@ namespace KinectPV2{
 							//std::cout << "error AccessUnderlyingBuffer frame depth" << std::endl;
 						}
 
+						if (!spaceTableAvailable && DeviceOptions::isCameraSpaceTableEnabled() && kCoordinateMapper) {
+							//Save a copy of the depth to camera space lookup table
+							PointF* tableEntries = nullptr;
+							uint32_t tableCount;
+							hr = kCoordinateMapper->GetDepthFrameToCameraSpaceTable(&tableCount, &tableEntries);
+							if (SUCCEEDED(hr)) {
+								uint32_t tableIndex = 0;
+								while (tableIndex < tableCount)
+								{  //pixelsData
+									depthToCameraSpaceTable[tableIndex * 2] = tableEntries[tableIndex].X;
+									depthToCameraSpaceTable[tableIndex * 2 + 1] = tableEntries[tableIndex].Y;
+
+									++tableIndex;
+								}
+								spaceTableAvailable = true;
+							}
+						}
+
 						if (DeviceOptions::isEnablePointCloud() && kCoordinateMapper){
 
+							
 							UINT16 *pBufferPC = NULL;
 							hr = pDepthFrame->AccessUnderlyingBuffer(&nBufferSize, &pBufferPC);
 							//std::cout << "PC" << std::endl;
@@ -2074,6 +2098,11 @@ namespace KinectPV2{
 	float * Device::JNI_pointCloudPosData()
 	{
 		return pointCloudPosData;
+	}
+
+	float * Device::JNI_depthToCameraSpaceTable()
+	{
+		return depthToCameraSpaceTable;
 	}
 
 	float * Device::JNI_pointCloudColorData()

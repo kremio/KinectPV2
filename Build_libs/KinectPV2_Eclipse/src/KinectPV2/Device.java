@@ -50,7 +50,7 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 		if (arch == 64) {
 			System.loadLibrary("Kinect20.Face");
 			System.loadLibrary("KinectPV2");
-			System.out.println("Loading KinectV2");
+			System.out.println("Loading KinectV2 - KSD mod");
 		} else {
 			System.out.println("not compatible with 32bits");
 		}
@@ -82,6 +82,7 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 	protected boolean stopDevice;
 
 	FloatBuffer pointCloudDepthPos;
+	FloatBuffer depthToCameraSpaceTable;
 
 
 	FloatBuffer pointCloudColorPos;
@@ -129,6 +130,9 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 
 		pointCloudDepthPos = Buffers.newDirectFloatBuffer(WIDTHDepth
 				* HEIGHTDepth * 3);
+		
+		depthToCameraSpaceTable = Buffers.newDirectFloatBuffer(WIDTHDepth
+				* HEIGHTDepth * 2);
 
 		pointCloudColorPos = Buffers.newDirectFloatBuffer(WIDTHColor
 				* HEIGHTColor * 3);
@@ -483,6 +487,23 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 	}
 
 	/**
+	 * Get Depth to Camera space look up table as FloatBuffer, transform to a float array with .array(), or get values with get(index)
+	 *
+	 * @return FloatBuffer
+	 */
+	public FloatBuffer getDepthToCameraSpaceTable() {
+		/*if( depthToCameraSpaceTable != null ) {
+			return depthToCameraSpaceTable;
+		}*/
+		float[] pcRawData = jniGetDepthToCameraSpaceTable();
+		System.out.println("Look up table: "+pcRawData.length);
+		depthToCameraSpaceTable.put(pcRawData, 0, WIDTHDepth * HEIGHTDepth * 2);
+		depthToCameraSpaceTable.rewind();
+
+		return depthToCameraSpaceTable;
+	}
+	
+	/**
 	 * Get Point Cloud Color Positions as a FloatBuffer, transform to a float array with .array(), or get values with get(index)
 	 * @return FloatBuffer
 	 */
@@ -596,6 +617,17 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 	 */
 	public void enableColorPointCloud(boolean toggle) {
 		jniEnableColorChannel(toggle);
+	}
+	
+	/**
+	 * Enable or disable the acquisition of the DepthToCameraSpace mapping table.
+	 * Which is used to obtain getDepthToCameraSpace() (a 512 x 424 * 2 (x,y)
+	 * FloatBuffer)
+	 *
+	 * @param toggle
+	 */
+	public void enableCameraSpaceTable(boolean toggle) {
+		jniEnableCameraSpaceTable(toggle);
 	}
 
 	/**
@@ -763,6 +795,8 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 	private native void 	jniEnableHDFaceDetection(boolean toggle);
 
 	private native void 	jniEnablePointCloud(boolean toggle);
+	
+	private native void		jniEnableCameraSpaceTable(boolean toggle);
 
 
 	// COLOR CHANNEL
@@ -808,6 +842,8 @@ public class Device implements Constants, FaceProperties, SkeletonProperties,
 
 	// POINT CLOUD
 	private native float[] 	jniGetPointCloudDeptMap();
+	
+	private native float[]  jniGetDepthToCameraSpaceTable();
 
 	private native float[] 	jniGetPointCloudColorMap();
 
